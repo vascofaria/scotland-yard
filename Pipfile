@@ -7,6 +7,9 @@ verify_ssl = true
 
 [packages]
 matplotlib = "*"
+tk = "*"
+tkinter = "*"
+python3-tk = "*"
 
 [requires]
 python_version = "3.7"
