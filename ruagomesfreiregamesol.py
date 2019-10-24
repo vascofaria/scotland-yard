@@ -9,22 +9,22 @@ class SearchProblem:
 		self.goal      = goal
 		self.model     = model
 		self.auxheur   = auxheur
-		self.openSet   = []
-		self.inOpenSet = []
+		self.openSet   = [[], [], []]
+		self.inOpenSet = [[], [], []]
 		self.paths     = []
 
 	def search(self, init, limitexp = 2000, limitdepth = 10, tickets = [math.inf, math.inf, math.inf]):
 
 		for i in range (len(self.model)):
-			self.inOpenSet.append(False)
+			self.inOpenSet[0].append(False)
 
-		heapq.heappush(self.openSet, (math.inf, init[0], []))
-		self.inOpenSet[init[0]] = True
+		heapq.heappush(self.openSet[0], (math.inf, init[0], []))
+		self.inOpenSet[0][init[0]] = True
 
-		while (len(self.openSet) != 0):
+		while (len(self.openSet[0]) != 0):
 
-			current = heapq.heappop(self.openSet)
-			self.inOpenSet[current[1]] = False
+			current = heapq.heappop(self.openSet[0])
+			self.inOpenSet[0][current[1]] = False
 			self.paths.append([current[2], [current[1]]])
 			
 			if current[1] == self.goal[0]:
@@ -32,9 +32,9 @@ class SearchProblem:
 
 			for neighbor in self.model[current[1]]:
 				f = self.heuristicFunction(current[1], self.getPosition(neighbor), 0)
-				if not (self.inOpenSet[self.getPosition(neighbor)]):
-					heapq.heappush(self.openSet, (f, self.getPosition(neighbor), [self.getTicketType(neighbor)]))	 
-					self.inOpenSet[self.getPosition(neighbor)] = True
+				if not (self.inOpenSet[0][self.getPosition(neighbor)]):
+					heapq.heappush(self.openSet[0], (f, self.getPosition(neighbor), [self.getTicketType(neighbor)]))	 
+					self.inOpenSet[0][self.getPosition(neighbor)] = True
 		
 		return self.paths
 
