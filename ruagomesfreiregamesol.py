@@ -44,7 +44,8 @@ class SearchProblem:
       #  path.append([[transp], [position]])
 
     else:
-      self.bfs3(init, limitexp)
+      return self.bfsVeryNice(init)
+      #self.bfs3(init, limitexp)
       return []
       path.append([[], [init[0], init[1], init[2]]])
       self.positions = [init[0], init[1], init[2]]
@@ -95,9 +96,82 @@ class SearchProblem:
     if route[1] == self.goal[agentNumber]:
       self.agentStatus[agentNumber] = True
 
+  def bfsVeryNice(self, init):
+    levelQueues = []
+    nextLevelQueues = [[], [], []]
+    currents = [None, None, None]
+    status = [False, False, False]
+    solutions = [None, None, None]
+    path = []
+
+    done = False
+
+    levelQueues.append([(init[0], None, None)])
+    levelQueues.append([(init[1], None, None)])
+    levelQueues.append([(init[2], None, None)])
+
+    while not done:
+
+      for agentNumber in range(3):
+        for el in levelQueues[agentNumber]: #pode haver mais de um element solution
+          if self.goal[agentNumber] == el[0]:
+            solutions[agentNumber] = el # append
+            status[agentNumber] = True
+
+      if status[0] and status[1] and status[2]:
+
+        auxs = [solutions[0], solutions[1], solutions[2]]
+        while auxs[0][1] != None:
+          path.insert(0, [[], []])
+
+          for agentNumber in range(3):
+            path[0][0].append(auxs[agentNumber][2])
+            path[0][1].append(auxs[agentNumber][0])
+            auxs[agentNumber] = auxs[agentNumber][1]
+
+        path.insert(0, [[], [init[0], init[1], init[2]]])
+        done = True
+        return path
+
+      else:
+        for agentNumber in range(3):
+          status[agentNumber] = False
+
+      while len(levelQueues[0]) != 0 or len(levelQueues[1]) != 0 or len(levelQueues[2]) != 0:
+        
+        for agentNumber in range(3):
+
+          if len(levelQueues[agentNumber]) != 0:
+
+            current = levelQueues[agentNumber].pop(0)
+
+            for vertex in self.model[current[0]]:
+
+              nextLevelQueues[agentNumber].append((vertex[1], current, vertex[0]))
+
+      levelQueues = nextLevelQueues[:]
+      nextLevelQueues = [[], [], []]
+
+  def validateSolution(self, solutions):
+
+    auxs = [solutions[0], solutions[1], solutions[2]]
+
+    pos = [0, 0, 0]
+    while auxs[0][1] != None:
+      for agentNumber in range(3):
+        pos[agentNumber] = auxs[agentNumber][0]
+        auxs[agentNumber] = auxs[agentNumber][1]
+      if pos[0] == pos[1] or pos[0] == pos[2] or pos[1] == pos[2]:
+        print(solutions)
+        print('hey')
+        return False
+    #check tickets
+    return True
+
   def bfs3(self, init, limitexp):
     queue = []
     currents = [None, None, None]
+    path = []
 
     done = False
 
@@ -108,15 +182,29 @@ class SearchProblem:
     while not done and limitexp > 0:
       if currents[0] != None and currents[1] != None and currents[2] != None:
         if currents[0][0] == self.goal[0] and currents[1][0] == self.goal[1] and currents[2][0] == self.goal[2]:
+          print(currents)
           # checkar tickets and same position
-          for agentNumber in range(3):
-            aux = currents[agentNumber]
-            while aux[1] != None:
-              print(aux[0])
-              aux = aux[1]
+          auxs = [currents[0], currents[1], currents[2]]
+          while auxs[0][1] != None:
+            path.insert(0, [[], []])
+            print(path)
+            print(path[0])
+            print(path[0][0])
+            for agentNumber in range(3):
+              path[0][0].append(auxs[agentNumber][2])
+              path[0][1].append(auxs[agentNumber][0])
+              auxs[agentNumber] = auxs[agentNumber][1]
+
+          #for agentNumber in range(3):
+          #  aux = currents[agentNumber]
+          #  while aux[1] != None:
+          #    path.insert(0, [[aux[2]], [aux[0]]])
+          #    print(aux[0])
+          #    aux = aux[1]
+          print(path)
           done = True
         
-        print(currents[0][0], currents[1][0], currents[2][0])
+        #print(currents[0][0], currents[1][0], currents[2][0])
 
       for agentNumber in range(3):
         currents[agentNumber] = queue[agentNumber].pop(0)
